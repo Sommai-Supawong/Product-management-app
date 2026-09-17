@@ -2,7 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config({path: "../.env"});
+import { connectDB } from "./db.js";
 
+// เชื่อมต่อฐานข้อมูล
+connectDB();
 
 const app = express();
 app.use(cors());

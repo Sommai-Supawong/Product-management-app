@@ -1,0 +1,67 @@
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: express-postgres-container
+    #  เชื่อกับพอร์ตของเครื่องโฮสต์ไปยังพอร์ตของคอนเทนเนอร์ เชื่อมกับ .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+    #host:container
+      - "${POSTGRES_PORT}:5432" #ใช้พอร์ตจาก .env เพื่อเชื่อมต่อกับฐานข้อมูล PostgreSQL
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    #เช็คสุขภาพของคอนเทนเนอร์
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL", #  ใช้คำสั่ง shell เพื่อเช็คสุขภาพ
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost || exit 1" #ใช้คำสั่ง pg_isready เพื่อตรวจสอบว่าฐานข้อมูลพร้อมใช้งานหรือไม่ หากไม่พร้อมใช้งานจะออกด้วยรหัส 1
+        ]
+      interval: 5s  #เช็คสุขภาพทุก 5 วินาที
+      timeout: 5s   #รอการตอบสนองนานสุด 5 วินาที
+      retries: 10    #ลองเช็คสุขภาพทั้งหมด 10 ครั้งก่อนที่จะถือว่าคอนเทนเนอร์ไม่พร้อมใช้งาน
+  backend:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - ./backend/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    # คำสั่งที่จะรันเมื่อคอนเทนเนอร์เริ่มทำงาน
+    command: >-
+      sh -c 'if ["${NODE_ENV}" = "development"]; then
+        npm install && npm run dev;
+      else
+        npm install --omit=dev && npm run start;
+      fi'
+    ports:
+      - "${BACKEND_PORT}:3000" #เชื่อมต่อพอร์ตของเครื่องโฮสต์ไปยังพอร์ตของคอนเทนเนอร์
+    depends_on:
+      postgres-db:
+        condition: service_healthy #รอให้คอนเทนเนอร์ postgres-db พร้อมใช้งานก่อนที่จะเริ่มคอนเทนเนอร์ backend
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - ./frontend/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=${VITE_API_URL}
+    command: sh -c "npm install && npm run dev -- --host --force"
+    ports:
+      - "${FRONTEND_PORT}:5173" #เชื่อมต่อพอร์ตของเครื่องโฮสต์ไปยังพอร์ตของคอนเทนเนอร์
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  backend_node_modules:
+  frontend_node_modules:

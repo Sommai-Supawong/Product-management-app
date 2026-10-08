@@ -2,17 +2,20 @@ import Product from "../model/productModel.js";
 
 const createProduct = async (req, res, next) => {
   try {
-    const { name, price, description, image } = req.body;
+    // ดึงค่าจาก req.body โดย image คือ URL ของรูปภาพ และ audio คือ URL หรือ Base64 ของไฟล์เสียง
+    const { name, price, description, image, audio } = req.body;
     if (!name || !price) {
       return res
         .status(400)
         .json({ message: "Name and Price are requied fields" });
     }
+    // บันทึกข้อมูลสินค้าใหม่ รวมถึง URL รูปภาพ และไฟล์เสียง audio ลง Database
     const newProduct = await Product.create({
       name,
       price: Number(price),
       description,
       image,
+      audio,
     });
     return res.status(201).json(newProduct);
   } catch (error) {
@@ -55,8 +58,8 @@ const updateProduct = async (req, res, next) => {
     // แปลง id จาก string เป็น number
     const productId = Number(req.params.id);
 
-    // รับค่าใหม่จาก body (จะส่งมาแค่บางฟิลด์ก็ได้)
-    const { name, price } = req.body;
+    // รับค่าใหม่จาก body (รวมถึง URL รูปภาพใหม่ image และไฟล์เสียง audio)
+    const { name, price, description, image, audio } = req.body;
 
     // หา product ที่จะแก้ไขก่อน
     const product = await Product.findByPk(productId);
@@ -66,9 +69,12 @@ const updateProduct = async (req, res, next) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // อัปเดตค่า ถ้าไม่ส่งมาให้ใช้ค่าเดิม
+    // อัปเดตค่า ถ้าไม่ส่งมาให้ใช้ค่าเดิม (รวมถึงฟิลด์ description, image URL และ audio)
     product.name = name || product.name;
-    product.price = price ? Number(price) : product.price;
+    product.price = price !== undefined ? Number(price) : product.price;
+    product.description = description !== undefined ? description : product.description;
+    product.image = image !== undefined ? image : product.image;
+    product.audio = audio !== undefined ? audio : product.audio;
 
     // บันทึกลง database จริง
     await product.save();

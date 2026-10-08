@@ -1,2 +1,17 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@theme {
+  --font-sans: "Kanit", sans-serif;
+}
+
+html,
+body,
+button,
+input,
+optgroup,
+select,
+textarea,
+* {
+  font-family: "Kanit", sans-serif !important;
+}

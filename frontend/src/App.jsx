@@ -1,80 +1,38 @@
-import { useState, useEffect } from "react";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ToastProvider } from "./context/ToastContext";
+import MainLayout from "./layouts/MainLayout";
+import ProductPage from "./pages/ProductPage";
+import AddProduct from "./pages/AddProduct";
+import EditProduct from "./pages/EditProduct";
+import NotFound from "./pages/NotFound";
 import "./App.css";
 
 function App() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Use environment variable from Vite
-  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/api/products`);
-      if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-base-200 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-primary">Product Management</h1>
-          <button className="btn btn-primary" onClick={() => fetchProducts()}>Refresh</button>
-        </div>
+    <ToastProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* ครอบด้วย MainLayout เพื่อให้ทุกหน้าใช้ธีม Soft Color และ Glass UI เหมือนกัน */}
+          <Route element={<MainLayout />}>
+            {/* หน้าหลัก: แสดงรายการสินค้า */}
+            <Route path="/" element={<ProductPage />} />
+            <Route path="/products" element={<Navigate to="/" replace />} />
 
-        {loading ? (
-          <div className="flex justify-center my-12">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.length === 0 ? (
-              <div className="col-span-full text-center py-12 bg-base-100 rounded-xl shadow">
-                <p className="text-lg opacity-70">No products found. Add some to your backend!</p>
-              </div>
-            ) : (
-              products.map((product) => (
-                <div key={product.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-                  {product.image ? (
-                    <figure className="h-48 overflow-hidden bg-white">
-                      <img src={product.image} alt={product.name} className="object-cover w-full h-full" />
-                    </figure>
-                  ) : (
-                    <figure className="h-48 flex items-center justify-center bg-base-300">
-                      <span className="opacity-50">No Image</span>
-                    </figure>
-                  )}
-                  <div className="card-body">
-                    <h2 className="card-title justify-between">
-                      {product.name}
-                      <span className="badge badge-secondary">${Number(product.price).toFixed(2)}</span>
-                    </h2>
-                    <p className="text-sm opacity-80 mt-2">
-                      {product.description || "No description provided."}
-                    </p>
-                    <div className="card-actions justify-end mt-4">
-                      <button className="btn btn-sm btn-outline btn-info">Edit</button>
-                      <button className="btn btn-sm btn-outline btn-error">Delete</button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+            {/* หน้าเพิ่มสินค้าใหม่ */}
+            <Route path="/add" element={<AddProduct />} />
+            <Route path="/products/add" element={<Navigate to="/add" replace />} />
+
+            {/* หน้าแก้ไขสินค้าตาม ID */}
+            <Route path="/edit/:id" element={<EditProduct />} />
+            <Route path="/products/edit/:id" element={<EditProduct />} />
+
+            {/* หน้า 404 เมื่อไม่พบเส้นทางที่ระบุ */}
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ToastProvider>
   );
 }
 

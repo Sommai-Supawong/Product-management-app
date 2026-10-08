@@ -9,10 +9,17 @@ import {
 
 const productRouter = Router();
 
-productRouter.post("/", createProduct);
-productRouter.get("/", getAllProduct);
-productRouter.get("/:id", getProductById);
-productRouter.put("/:id", updateProduct);
-productRouter.delete("/:id", deleteProduct);
+// เส้นทางสำหรับ /api/products (ดึงสินค้าทั้งหมด และเพิ่มสินค้าใหม่)
+productRouter
+  .route("/")
+  .get(getAllProduct)
+  .post(createProduct);
+
+// เส้นทางสำหรับ /api/products/:id (ดึงรายชิ้น, แก้ไข, ลบ ตาม ID)
+productRouter
+  .route("/:id")
+  .get(getProductById)
+  .put(updateProduct)
+  .delete(deleteProduct);
 
 export default productRouter;

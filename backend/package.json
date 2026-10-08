@@ -1,16 +1,15 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Restfull api for product manegement App",
+  "description": "Restful API Product Management App",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js"
-
   },
-  "author": "sommai",
+  "author": "Kitikon Thettham",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.6",

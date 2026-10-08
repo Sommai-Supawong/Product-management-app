@@ -37,7 +37,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
     # คำสั่งที่จะรันเมื่อคอนเทนเนอร์เริ่มทำงาน
     command: >-
-      sh -c 'if ["${NODE_ENV}" = "development"]; then
+      sh -c 'if [ "${NODE_ENV}" = "development" ]; then
         npm install && npm run dev;
       else
         npm install --omit=dev && npm run start;
@@ -54,7 +54,7 @@ services:
       - ./frontend:/app
       - ./frontend/node_modules:/app/node_modules
     environment:
-      - NODE_ENV=${VITE_API_URL}
+      - VITE_API_URL=${VITE_API_URL}
     command: sh -c "npm install && npm run dev -- --host --force"
     ports:
       - "${FRONTEND_PORT}:5173" #เชื่อมต่อพอร์ตของเครื่องโฮสต์ไปยังพอร์ตของคอนเทนเนอร์
@@ -63,5 +63,5 @@ services:
 
 volumes:
   pgdata:
-  backend_node_modules:
+  backend_wnode_modules:
   frontend_node_modules:

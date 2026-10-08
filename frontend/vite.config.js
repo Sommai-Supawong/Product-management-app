@@ -6,6 +6,15 @@ import tailwindcss from '@tailwindcss/vite' // 1. Import ปลั๊กอิ�
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(), // 2. ใส่ฟังก์ชันลงในอาเรย์ plugins
-  ],
+    tailwindcss(), ],
+    server:{
+      watch:{
+        usePolling:true,
+        interval:500,
+      }
+    }, // 2. ใส่ฟังก์ชันลงในอาเรย์ plugins
+    optimizeDeps: {
+      include: ['@headlessui/react', '@heroicons/react'],
+      force: true,
+    },
 })

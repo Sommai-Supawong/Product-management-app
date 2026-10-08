@@ -7,7 +7,8 @@ import productRouter from "./router/productRouter.js";
 // .env อยู่ข้างนอก
 dotenv.config();
 
-const PORT = process.env.BACKEND_PORT;
+// Dynamically bind to Render's PORT or fallback to 3000
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(cors());

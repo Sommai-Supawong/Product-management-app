@@ -146,7 +146,10 @@ npm run dev
 
 ไฟล์ `.env` ที่โฟลเดอร์หลัก:
 ```env
-# Database
+# Neon Database (Cloud PostgreSQL)
+DATABASE_URL=postgresql://neondb_owner:***@ep-super-rice-azbds6yf-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require
+
+# Local Database (Fallback)
 POSTGRES_USER=dev_user
 POSTGRES_PASSWORD=dev_password
 POSTGRES_DB=product_db
@@ -154,11 +157,6 @@ POSTGRES_PORT=5433
 
 # Backend
 NODE_ENV=development
-DB_HOST=postgres-db
-DB_PORT=5432
-DB_NAME=product_db
-DB_USER=dev_user
-DB_PASSWORD=dev_password
 BACKEND_PORT=5000
 
 # Frontend

@@ -63,5 +63,5 @@ services:
 
 volumes:
   pgdata:
-  backend_node_modules:
+  backend_wnode_modules:
   frontend_node_modules:
